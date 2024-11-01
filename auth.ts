@@ -13,25 +13,28 @@ declare module "next-auth" {
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: MongoDBAdapter(clientPromise,{
     databaseName: "nextauth",
+
   }),
   providers: [Google({
     clientId: process.env.GOOGLE_CLIENT_ID!,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-  })],
-  session: {
-    strategy: "jwt"
-  },
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.role = user.role || "user" // Default role
+    profile(profile) {
+      return {
+        id: profile.id,
+        name: profile.name,
+        email: profile.email,
+        image: profile.picture,
+        role:  profile.role ?? "user"
       }
+    }
+  })],
+  callbacks: {
+    jwt({ token, user }) {
+      if(user) token.role = user.role
       return token
     },
-    async session({ session, token }) {
-      if (session?.user) {
-        session.user.role = token.role as string
-      }
+    session({ session, token }) {
+      session.user.role = token.role as string | undefined
       return session
     }
   }
