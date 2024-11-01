@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -15,14 +16,18 @@ export default function Home() {
       </p>
       {!session ? (
         <div className="flex gap-4">
-          <Button size="lg">Get Started</Button>
+          <Link href={"/auth/signin"}>
+            <Button size="lg">Dashboard</Button>
+          </Link>
           <Button variant="outline" size="lg">
             Learn More
           </Button>
         </div>
       ) : (
         <div className="flex gap-4">
-          <Button size="lg">Dashboard</Button>
+          <Link href={"/dashboard"}>
+            <Button size="lg">Dashboard</Button>
+          </Link>
         </div>
       )}
     </main>
